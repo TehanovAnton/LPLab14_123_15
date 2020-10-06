@@ -63,7 +63,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		// LPLab14-2
 		LTITBuilding(lexTable, idTable, str);
 
-		// выставлени пространств имён
 		exposingNamespaces(lexTable, idTable);
 
 		//вывод LT

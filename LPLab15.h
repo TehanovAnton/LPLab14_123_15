@@ -79,6 +79,9 @@ bool strcamper(char idtableEl[], char findingEl[])
 	return res;
 }
 
+void set_aE(IT::IdTable& idTable, int lstChngId, int aB, int aE);
+void set_aB(LT::LexTable lexTable, IT::IdTable& idTable, int& lstChngId, int aB, int& aE);
+void exposingNamespaces(LT::LexTable lexTable, IT::IdTable& idTable);
 
 void FillLT(LT::LexTable& lexTable, LT::Entry& entryL, char shrtLex[], int line)
 {
@@ -475,12 +478,10 @@ void LTITBuilding(LT::LexTable& lexTable, IT::IdTable& idTable, std::string orif
 	}
 }
 
-void set_aE(IT::IdTable& idTable, int lstChngId, int aB, int aE);
-void set_aB(LT::LexTable lexTable, IT::IdTable& idTable, int& lstChngId, int aB, int& aE);
-
 void set_aB(LT::LexTable lexTable, IT::IdTable& idTable, int& lstChngId, int aB, int& aE)
 {
 	for (int i = aB + 1; lexTable.table[i].lexema[0] != LEX_BRACELET &&
+		i < lexTable.size &&
 		!(lexTable.table[i].lexema[0] == LEX_RiGHTHESIS && lexTable.table[i + 1].lexema[0] == LEX_SEMICOLON); i++, aE = i)
 	{
 		LT::Entry elLT = lexTable.table[i];
@@ -515,6 +516,29 @@ void set_aE(IT::IdTable& idTable, int lstChngId, int aB, int aE)
 	}
 }
 
+
+bool operator <= (IT::visibleArea a, IT::visibleArea b)
+{
+	return (a.aB > b.aB && a.aE < b.aE) || (a.aB == b.aB && a.aE == b.aE);
+}
+
+bool operator != (IT::visibleArea a, IT::visibleArea b)
+{
+	return (a.aB < b.aB&& a.aE < b.aE) || (a.aB > b.aB && a.aE > b.aE);
+}
+
+bool operator == (IT::visibleArea a, IT::visibleArea b)
+{
+	return a.aB == b.aB&& a.aE == b.aE;
+}
+
+//bool operator > (IT::visibleArea a, IT::visibleArea b)
+//{
+//	return a.aB < b.aB&& a.aE > b.aE;
+//}
+
+
+
 void exposingNamespaces(LT::LexTable lexTable, IT::IdTable& idTable)
 {
 	int lasatChangedIdentificator = 0;
@@ -527,6 +551,22 @@ void exposingNamespaces(LT::LexTable lexTable, IT::IdTable& idTable)
 			set_aB(lexTable, idTable, lasatChangedIdentificator, aB, i);
 
 			set_aE(idTable, lasatChangedIdentificator, aB, i);
+		}
+	}
+
+	// проверка на ошибку переопределения
+	for (int i = 0; i < idTable.size; i++)
+	{
+		IT::Entry elIT = idTable.table[i];
+		for (int e = i - 1; e >= 0; e--)
+		{
+			if (!(elIT.vsbAr != idTable.table[e].vsbAr) && elIT.idtype == idTable.table[e].idtype)
+			{
+				if (strcamper(elIT.id, idTable.table[e].id) && elIT.vsbAr <= idTable.table[e].vsbAr)
+				{
+					printf("переопределение идентификатора: %s,\t{%d, %d}\n", elIT.id, lexTable.positions[elIT.idxfirstLE].line, lexTable.positions[elIT.idxfirstLE].colone);
+				}
+			}
 		}
 
 	}
