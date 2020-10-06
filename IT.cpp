@@ -83,7 +83,7 @@ namespace IT
 
 	int IstdFromCurrent(IdTable& idtable, char* id)
 	{
-		for (size_t i = idtable.size - 1; i >= 0; i--)
+		for (int i = idtable.size - 1; i >= 0; i--)
 		{
 			bool res = true;
 			// сравнение строк
