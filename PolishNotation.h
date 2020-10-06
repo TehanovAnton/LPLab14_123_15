@@ -3,10 +3,10 @@
 #include"LT.h"
 #include"IT.h"
 
-#define SymWithPriorytyAmount 6
-#define OperationsLEFTTHESIS "+-*/()"
+#define SymWithPriorytyAmount 8
+#define OperationsLEFTTHESIS "+-*/()[]"
 #define Operations "+-*/"
-#define prior_1 {'(', 1}, {')', 1}
+#define prior_1 {'(', 1}, {')', 1}, {'[', 1}, {']', 1}
 #define prior_2 {'+', 2}, {'-', 2}
 #define prior_3 {'*', 3}, {'/', 3}
 
@@ -32,7 +32,7 @@ namespace PN // PolishNotation
 
 	int GetPrioryty(char sym, SymWithPrioryty prior[]);
 
-	void parseFunctoPnstr(char origStr[], PNstr& res, size_t& i, std::stack<char>& stck, SymWithPrioryty prioryties[]);
+	void parseFunctoPnstr(char origStr[], PNstr& res, int& i, std::stack<char>& stck, SymWithPrioryty prioryties[]);
 
 	bool PolishNotation(int expressionStart, char origStr[]);
 

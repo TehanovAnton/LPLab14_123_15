@@ -22,6 +22,8 @@
 #define LEX_DIRSLASH '/'			// лексема для /
 #define LEX_EQUAl '='				// лексема для =
 #define LEX_MAIN 'm'				// лекскема для main
+#define LEX_LSQBRACKET '['
+#define LEX_RSQBRACKET ']'
 
 #include "IT.h"
 #include "SpecialSym.h"

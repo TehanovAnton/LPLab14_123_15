@@ -41,16 +41,16 @@ namespace PN
 		return 0;
 	}
 
-	void parseFunctoPnstr(char origStr[], PNstr& res, size_t& i, std::stack<char>& stck, SymWithPrioryty prioryties[])
+	void parseFunctoPnstr(char origStr[], PNstr& res, int& i, std::stack<char>& stck, SymWithPrioryty prioryties[])
 	{
 		char
 			func = origStr[i++],
 			lex = origStr[++i];
-		size_t parmCounter = 0;
+		int parmCounter = 0;
 		for (; origStr[i] != LEX_RiGHTHESIS; lex = origStr[++i])
 		{
 			// операнд
-			if (lex == LEX_ID && origStr[i + 1] != LEX_LEFTHESIS)
+			if (lex == LEX_ID && origStr[i + 1] != LEX_LEFTHESIS || lex == LEX_LITERAL)
 			{
 				// запись операнда в порядке следования
 				res.pnstr[res.size++] = lex;
@@ -60,7 +60,8 @@ namespace PN
 			// функция
 			else if (origStr[i + 1] == LEX_LEFTHESIS && lex == LEX_ID)
 			{
-				parseFunctoPnstr(origStr, res, i, stck, prioryties);
+				std::stack<char> stckintern;
+				parseFunctoPnstr(origStr, res, i, stckintern, prioryties);
 			}
 			// операция
 			else if (isSymInStr(lex, OperationsLEFTTHESIS))
@@ -111,11 +112,107 @@ namespace PN
 			else
 				continue;
 		}
+		// выталкивание операций до опустошения стека
+		for (; !stck.empty(); )
+		{
+			res.pnstr[res.size++] = stck.top();
+			res.pnstr[res.size] = '\0';
+			stck.pop();
+		}
 		// приобразование числа параметров в символ 
 		char parCou[2];
 		_itoa_s(parmCounter, parCou, 10);
 		res.pnstr[res.size++] = parCou[0];
 		res.pnstr[res.size++] = func;
+		res.pnstr[res.size] = '\0';
+	}
+
+	void parseArrtoPnstr(char origStr[], PNstr& res, int& i, std::stack<char>& stck, SymWithPrioryty prioryties[])
+	{
+		char			
+			lex = origStr[++i];
+		int parmCounter = 0;
+		for (; origStr[i] != LEX_RSQBRACKET; lex = origStr[++i])
+		{
+			// операнд
+			if (lex == LEX_ID || lex == LEX_LITERAL)
+			{
+				// запись операнда в порядке следования
+				res.pnstr[res.size++] = lex;
+				res.pnstr[res.size] = '\0';
+				parmCounter++;
+			}
+			// функция
+			/*else if (origStr[i + 1] == LEX_LEFTHESIS && lex == LEX_ID)
+			{
+				parseFunctoPnstr(origStr, res, i, stck, prioryties);
+			}*/
+			// массив 
+			else if (lex == LEX_LSQBRACKET)
+			{
+				std::stack<char> stckintern;
+				parseArrtoPnstr(origStr, res, i, stckintern, prioryties);
+			}
+			// операция
+			else if (isSymInStr(lex, OperationsLEFTTHESIS))
+			{
+				// стек пуст или в вершине откр. скобка
+				if (stck.empty() || stck.top() == LEX_LSQBRACKET || lex == LEX_LSQBRACKET)
+				{
+					stck.push(lex);
+				}
+				// закрывающая скобка
+				else if (lex == LEX_RSQBRACKET)
+				{
+					// выталкивание операций до открывающей скобки
+					for (; stck.top() != LEX_RSQBRACKET; )
+					{
+						res.pnstr[res.size++] = stck.top();
+						res.pnstr[res.size] = '\0';
+						stck.pop();
+					}
+					stck.pop();
+				}
+				// в верщине стека и строки опрерация 
+				else if (isSymInStr(lex, Operations) && isSymInStr(stck.top(), Operations))
+				{
+					// операция выталкивает из стека операцию с большим либо равным приоритетом
+					if (GetPrioryty(lex, prioryties) <= GetPrioryty(stck.top(), prioryties))
+					{
+						res.pnstr[res.size++] = stck.top();
+						res.pnstr[res.size] = '\0';
+						stck.pop();
+						stck.push(lex);
+					}
+					// операция в строке проирететней чем в стеке
+					else
+						stck.push(lex);
+				}
+			}
+			// выталкивание всех операций до опустошения стека
+			else if (lex == LEX_COMMA)
+			{
+				for (; !stck.empty(); )
+				{
+					res.pnstr[res.size++] = stck.top();
+					res.pnstr[res.size] = '\0';
+					stck.pop();
+				}
+			}
+			else
+				continue;
+		}
+		for (; !stck.empty(); )
+		{
+			res.pnstr[res.size++] = stck.top();
+			res.pnstr[res.size] = '\0';
+			stck.pop();
+		}
+		// приобразование числа параметров в символ 
+		char parCou[2];
+		_itoa_s(parmCounter, parCou, 10);
+		res.pnstr[res.size++] = parCou[0];
+		res.pnstr[res.size++] = '@';
 		res.pnstr[res.size] = '\0';
 	}
 
@@ -125,11 +222,11 @@ namespace PN
 		PNstr res = PNstr();
 		std::stack<char> stck;
 
-		size_t i = expressionStart + 1;
+		int i = expressionStart + 1;
 		for (char lex = origStr[i]; origStr[i] != LEX_SEMICOLON; lex = origStr[++i])
 		{
 			// операнд
-			if (lex == LEX_ID && origStr[i + 1] != LEX_LEFTHESIS)
+			if ((lex == LEX_ID && origStr[i + 1] != LEX_LEFTHESIS) || lex == LEX_LITERAL)
 			{
 				// запись операнда в порядке следования
 				res.pnstr[res.size++] = lex;
@@ -141,7 +238,13 @@ namespace PN
 				std::stack<char> stckintern;
 				parseFunctoPnstr(origStr, res, i, stckintern, prioryties);
 			}
-			// знак операции или скобки 
+			// массив 
+			else if (lex == LEX_LSQBRACKET)
+			{
+				std::stack<char> stckintern;
+				parseArrtoPnstr(origStr, res, i, stckintern, prioryties);
+			}
+			// знаки операций или скобки 
 			else if (isSymInStr(lex, OperationsLEFTTHESIS))
 			{
 				// стек пуст или в вершине откр. скобка
@@ -150,7 +253,7 @@ namespace PN
 					stck.push(lex);
 				}
 				// закрывающая скобка
-				else if (lex == LEX_RiGHTHESIS)
+				else if (lex == LEX_RiGHTHESIS || lex == LEX_RSQBRACKET)
 				{	
 					// выталкивание операций до открывающей скобки
 					for (; !stck.empty() &&  stck.top() != LEX_LEFTHESIS; )
