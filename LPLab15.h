@@ -181,7 +181,8 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 				// имя литерала
 				char buffer[1000];
 				_itoa_s(++litCounter, buffer, 1000, 10);
-				strcopy(entryI.id, buffer);
+				entryI.id[0] = 'L';
+				strcopy(entryI.id + 1, buffer);
 
 				// тип данных; определяется автомату который сработал для предидущей лексемы
 				entryI.iddatatype = IT::INT;
@@ -241,7 +242,7 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 		return true;
 	}
 
-	IT::Add(idTable, entryI, lexTable.positions[lexCounter].line, lexTable.positions[lexCounter].colone);
+	IT::Add(idTable, entryI, lexTable.positions[lexCounter - 1].line, lexTable.positions[lexCounter - 1].colone);
 	return true;
 }
 
@@ -369,6 +370,8 @@ bool parsingLexem(char lexem[], LT::LexTable& lexTable, IT::IdTable& idTable, LT
 		else
 			continue;
 	}
+
+	throw ERROR_THROW_IN(115, line, lexTable.positions[lexCounter - 1].colone)
 
 	return false;
 }
@@ -536,8 +539,6 @@ bool operator == (IT::visibleArea a, IT::visibleArea b)
 //{
 //	return a.aB < b.aB&& a.aE > b.aE;
 //}
-
-
 
 void exposingNamespaces(LT::LexTable lexTable, IT::IdTable& idTable)
 {
