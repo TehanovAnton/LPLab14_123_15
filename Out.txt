@@ -1,8 +1,8 @@
 integer function fi(integer x,integer y)
 {
 declare integer j=1;
-declare integer j=2;
 declare integer l=1;
+declare integer l=4;
 declare integer z=x*(x+y);
 return z;
 };

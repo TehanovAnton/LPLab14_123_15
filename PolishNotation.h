@@ -21,6 +21,16 @@ namespace PN // PolishNotation
 		PNstr(int m, int s, char* pns);
 	};
 
+	struct PNLTstr
+	{
+		int maxsize;
+		int size;
+		LT::Entry* pnstr;
+		PNLTstr();
+		PNLTstr(int m);
+		void AddlexWithITcorection(LT::Entry entryL, IT::IdTable& idTable, int indx);
+	};
+
 	struct SymWithPrioryty
 	{
 		char sym;
@@ -33,8 +43,10 @@ namespace PN // PolishNotation
 	int GetPrioryty(char sym, SymWithPrioryty prior[]);
 
 	void parseFunctoPnstr(char origStr[], PNstr& res, int& i, std::stack<char>& stck, SymWithPrioryty prioryties[]);
-
+	void parseArrtoPnstr(char origStr[], PNstr& res, int& i, std::stack<char>& stck, SymWithPrioryty prioryties[]);
 	bool PolishNotation(int expressionStart, char origStr[]);
 
-	//bool PolishNotation(int exprStart, LT::LexTable& lexTable, IT::IdTable& idTable);
+	void parseFunctoPnstrLT(LT::LexTable& lexTable, IT::IdTable& idTable, PNLTstr& res, int& i, std::stack<LT::Entry>& stck, SymWithPrioryty prioryties[]);
+	void parseArrtoPnstrLT(LT::LexTable& lexTable, IT::IdTable& idTable, PNLTstr& res, int& i, std::stack<LT::Entry>& stck, SymWithPrioryty prioryties[]);
+	bool PolishNotation(int exprStart, LT::LexTable& lexTable, IT::IdTable& idTable);
 }

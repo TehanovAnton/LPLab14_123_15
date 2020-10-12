@@ -1,7 +1,8 @@
 ﻿#include "LPLab15.h"
 #include "PolishNotation.h"
 
-#define LPLab 0
+#define LPLab 1
+#define PolishNot 0				
 // индексы лексемы LEX_EQUALS
 #define EXP1 28 // позиция первогог выражения
 #define EXP2 50 // позиция второго выражения
@@ -12,6 +13,7 @@
 #define test1 "=(l+l)*(l+l)-i;"
 #define test2 "=i*i(i+i(i(i,i)+i,i))-i/i(i,i);"
 #define test3 "=i*[i+[[i,i]+i,i]]-i/[i,i];"
+#define test4 "=i*i()-i/i(i,i);"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -19,8 +21,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	Log::LOG log = Log::INITLOG;
 	try
 	{
-		char str[] = test3;
-		PN::PolishNotation(0, str);		
+#if PolishNot
+	char str[] = test4;
+	PN::PolishNotation(0, str);
+#endif // PolishNot
 		
 #if LPLab
 

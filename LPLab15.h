@@ -564,7 +564,7 @@ void exposingNamespaces(LT::LexTable lexTable, IT::IdTable& idTable)
 			{
 				if (strcamper(elIT.id, idTable.table[e].id) && elIT.vsbAr <= idTable.table[e].vsbAr)
 				{
-					printf("переопределение идентификатора: %s,\t{%d, %d}\n", elIT.id, lexTable.positions[elIT.idxfirstLE].line, lexTable.positions[elIT.idxfirstLE].colone);
+					printf("переопределение идентификатора: %s,\t{%d, %d}\n", elIT.id, lexTable.positions[elIT.idxfirstLE - 1].line, lexTable.positions[elIT.idxfirstLE - 1].colone);
 				}
 			}
 		}
