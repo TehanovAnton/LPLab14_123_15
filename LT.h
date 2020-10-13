@@ -79,6 +79,8 @@ namespace LT							// таблица лексем
 		int n							// номер получаемой строки
 	);
 
+	int IstdByID(LexTable lexTable, char value[]);
+
 	void Delete(									// удалить таблицу лексем (освободить память)
 		LexTable& lextable
 	);

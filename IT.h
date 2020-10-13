@@ -84,6 +84,8 @@ namespace IT
 
     int IstdByValue(IdTable idTable, char value[]);
 
+    int IstdByID(IdTable idTable, char value[]);
+
     int IstdFromCurrent(IdTable& idtable, char id[ID_MAXSIZE]);
 
     void Delete(

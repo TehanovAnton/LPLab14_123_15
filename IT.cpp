@@ -80,6 +80,25 @@ namespace IT
 		}
 		return TI_NULLIDX;
 	}
+	int IstdByID(IdTable idTable, char value[])
+	{
+		for (size_t i = 0; i < idTable.size; i++)
+		{
+			bool res = true;
+			// сравнение значений по символам 
+			size_t e = 0;
+			for (; e < strlen(value) && res; e++)
+			{
+				res &= idTable.table[i].id[e] == value[e];
+			}
+
+			if (res && e == strlen(value))
+			{
+				return i;
+			}
+		}
+		return TI_NULLIDX;
+	}
 
 	int IstdFromCurrent(IdTable& idtable, char* id)
 	{

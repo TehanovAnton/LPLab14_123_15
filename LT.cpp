@@ -60,6 +60,26 @@ namespace LT
 		}
 	}
 
+	int IstdByID(LexTable lexTable, char value[])
+	{
+		for (size_t i = 0; i < lexTable.size; i++)
+		{
+			bool res = true;
+			// сравнение значений по символам 
+			size_t e = 0;
+			for (; e < strlen(value) && res; e++)
+			{
+				res &= lexTable.table[i].lexema[e] == value[e];
+			}
+
+			if (res && e == strlen(value))
+			{
+				return i;
+			}
+		}
+		return TI_NULLIDX;
+	}
+
 	Entry GetEntry(LexTable& lextable, int n)
 	{
 		return lextable.table[n];

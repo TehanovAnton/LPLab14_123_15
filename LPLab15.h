@@ -238,8 +238,16 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 	}
 	else
 	{
-		lexTable.table[lexTable.size - 1].idxTI = IT::IstdFromCurrent(idTable, IdbyLexem(lexem));
-		return true;
+		setEntryIId(entryI, lexem);
+		if (IT::IstdByID(idTable, entryI.id) != (int)TI_NULLIDX)
+		{
+			lexTable.table[lexTable.size - 1].idxTI = IT::IstdFromCurrent(idTable, IdbyLexem(lexem));
+			return true;
+		}
+		else
+		{
+			throw ERROR_THROW_IN(116, lexTable.positions[lexCounter - 1].line, lexTable.positions[lexCounter - 1].colone);
+		}
 	}
 
 	IT::Add(idTable, entryI, lexTable.positions[lexCounter - 1].line, lexTable.positions[lexCounter - 1].colone);
@@ -352,7 +360,13 @@ bool parsingLexem(char lexem[], LT::LexTable& lexTable, IT::IdTable& idTable, LT
 			char mainKW[] = "main";
 			char shrtLex[2] = { shortLexm[i] , '\0' };
 			if (strcamper(lexem, mainKW))
+			{
 				shrtLex[0] = LEX_MAIN;
+				if (LT::IstdByID(lexTable, shrtLex) != (int)TI_NULLIDX)
+				{
+					throw ERROR_THROW_IN(117, line, lexTable.positions[lexCounter - 1].colone)
+				}
+			}
 
 
 			FillLT(lexTable, entryL, shrtLex, line);
