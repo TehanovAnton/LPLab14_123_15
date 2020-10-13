@@ -92,7 +92,7 @@ namespace IT
 				res &= idTable.table[i].id[e] == value[e];
 			}
 
-			if (res && e == strlen(value))
+			if (res && e == strlen(idTable.table[i].id))
 			{
 				return i;
 			}

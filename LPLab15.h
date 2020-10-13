@@ -11,6 +11,7 @@
 #include"FST.h"
 #include"IT.h"
 #include"LT.h"
+#include"PolishNotation.h"
 #include "SpecialSym.h"
 
 #define TOKENINIT 1
@@ -109,7 +110,7 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 		entryI.idtype = IT::V;
 
 		// ссылка на LT
-		entryI.idxfirstLE = lexCounter;
+		entryI.idxfirstLE = lexCounter - 1;
 
 		// значение по умолчанию
 		setDefValue(entryI);
@@ -132,7 +133,7 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 		entryI.idtype = IT::F;
 
 		// ссылка на LT
-		entryI.idxfirstLE = lexCounter;
+		entryI.idxfirstLE = lexCounter - 1;
 
 		// значение по умолчанию
 		setDefValue(entryI);
@@ -154,7 +155,7 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 		entryI.idtype = IT::P;
 
 		// ссылка на LT
-		entryI.idxfirstLE = lexCounter;
+		entryI.idxfirstLE = lexCounter - 1;
 
 		// значение по умолчанию
 		setDefValue(entryI);
@@ -191,7 +192,7 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 				entryI.idtype = IT::L;
 
 				// ссылка на LT
-				entryI.idxfirstLE = lexCounter;
+				entryI.idxfirstLE = lexCounter - 1;
 
 				// значение по умолчанию
 				entryI.values.vint = vint;
@@ -226,7 +227,7 @@ bool FillIT(LT::LexTable& lexTable, IT::IdTable& idTable, IT::Entry& entryI, int
 				entryI.idtype = IT::L;
 
 				// ссылка на LT
-				entryI.idxfirstLE = lexCounter;
+				entryI.idxfirstLE = lexCounter - 1;
 
 				// значение по умолчанию
 				strcopy(entryI.values.vste->str, value);
@@ -439,7 +440,7 @@ std::string processText(std::string str)
 
 void LTITBuilding(LT::LexTable& lexTable, IT::IdTable& idTable, std::string orifginalStr)
 {
-	char longLexem[TI_STR_MAXSIZE];
+	char longLexem[TI_STR_MAXSIZE];	
 	int litCounter = 0, lastToken = 0, preLastToken = 0, lexCounter = 0;
 	LT::Entry entryL;
 	IT::Entry entryI;
@@ -457,6 +458,11 @@ void LTITBuilding(LT::LexTable& lexTable, IT::IdTable& idTable, std::string orif
 				char lexem[2];
 				lexem[0] = orifginalStr[i]; lexem[1] = '\0';
 				parsingLexem(lexem, lexTable, idTable, entryL, entryI, lexTable.positions[lexCounter++].line, litCounter, lastToken, preLastToken, lexCounter);
+
+				if (orifginalStr[i] == LEX_EQUAl)
+				{
+					lexTable.posLEX_EQUALS[lexTable.posLEX_EQUALSSize++] = lexTable.size - 1;
+				}
 			}
 
 			//сброс конца строки
@@ -586,4 +592,31 @@ void exposingNamespaces(LT::LexTable lexTable, IT::IdTable& idTable)
 
 	}
 
+}
+
+void ChangeLTWithPN(LT::LexTable& lexTable, IT::IdTable& idTable)
+{
+	// обработка вырадений в польскую нотацию
+	int countEmptyEl = 0;
+	for (int i = 0; i < lexTable.posLEX_EQUALSSize; i++)
+	{
+		PN::PolishNotation(lexTable.posLEX_EQUALS[i], lexTable, idTable, countEmptyEl);
+	}
+	// исключение пустых элементов
+	LT::Entry* cleanTable = new  LT::Entry[lexTable.size - countEmptyEl];
+	for (int i = 0, e = 0; i < lexTable.size; i++)
+	{
+		if (lexTable.table[i].lexema[0] != EMPTYSTR)
+		{
+			cleanTable[e++] = lexTable.table[i];
+		}
+		else
+		{
+			continue;
+		}
+	}
+	// очистка памяти
+	delete lexTable.table;
+	lexTable.table = cleanTable;
+	lexTable.size = lexTable.size - countEmptyEl;
 }

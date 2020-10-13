@@ -1,8 +1,7 @@
 ﻿#include "LPLab15.h"
 #include "PolishNotation.h"
 
-#define LPLab 1
-#define PolishNot 0				
+#define LPLab 1	
 // индексы лексемы LEX_EQUALS
 #define EXP1 28 // позиция первогог выражения
 #define EXP2 50 // позиция второго выражения
@@ -20,12 +19,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	setlocale(LC_ALL, "rus");
 	Log::LOG log = Log::INITLOG;
 	try
-	{
-#if PolishNot
-	char str[] = test4;
-	PN::PolishNotation(0, str);
-#endif // PolishNot
-		
+	{		
 #if LPLab
 
 		Parm::PARM parm = Parm::getparm(argc, argv);
@@ -69,6 +63,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		LTITBuilding(lexTable, idTable, str);
 
 		exposingNamespaces(lexTable, idTable);
+
+		//LPLab15
+		ChangeLTWithPN(lexTable, idTable);
 
 		//вывод LT
 		lexTable.PrintTable();

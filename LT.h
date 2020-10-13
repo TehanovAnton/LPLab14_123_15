@@ -60,6 +60,8 @@ namespace LT							// таблица лексем
 		Entry* table;					// массив строк таблицы лексем
 		int posSize;
 		Position* positions;				// массив положений лексем
+		int posLEX_EQUALSSize;
+		int* posLEX_EQUALS;
 
 		void GetLexemsPosition(std::string  originalText);		// функция заполняет принемает текст исходной и заполняет массив положежний
 		void PrintTable();										// вывод таблицы
@@ -84,4 +86,6 @@ namespace LT							// таблица лексем
 	void Delete(									// удалить таблицу лексем (освободить память)
 		LexTable& lextable
 	);
+
+	bool ITPointerBefore(LT::LexTable lexTable, int idx, int ITpointer);
 }

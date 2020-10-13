@@ -42,7 +42,7 @@ namespace LT
 
 	LexTable Create(int size)
 	{
-		LexTable lextable = { size, 0, new Entry[size], 0, new Position[size] };
+		LexTable lextable = { size, 0, new Entry[size], 0, new Position[size], 0, new int[size] };
 		return lextable;
 	}
 
@@ -88,6 +88,19 @@ namespace LT
 	void Delete(LexTable& lextable)
 	{
 		delete& lextable;
+	}
+
+	bool ITPointerBefore(LT::LexTable lexTable, int idx, int ITpointer)
+	{
+		for (int i = idx; i >= 0; i--)
+		{
+			if (lexTable.table[i].idxTI == ITpointer)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	void LexTable::GetLexemsPosition(std::string originalText)
@@ -150,13 +163,20 @@ namespace LT
 		std::cout << this->table[0].sn << '\t';
 		for (size_t i = 0; i < this->size; i++)
 		{
-			std::cout << this->table[i].lexema;
+			if (this->table[i].lexema[0] != '\0')
+			{
+				std::cout << this->table[i].lexema;
 
-			if (this->table[i].sn != this->table[i + 1].sn && i + 1 != this->size)
-				printf("\t\t\t\t{%d, %d}\n%d\t", this->positions[i].line, this->positions[i].colone, this->table[i + 1].sn);
+				if (this->table[i].sn != -1 && this->table[i].sn < this->table[i + 1].sn && i + 1 != this->size)
+					printf("\t\t\t\t{%d, %d}\n%d\t", this->positions[i].line, this->positions[i].colone, this->table[i + 1].sn);
 
-			if (i + 1 == this->size)
-				printf("\t\t\t\t{%d, %d}", this->positions[i].line, this->positions[i].colone);
+				if (i + 1 == this->size)
+					printf("\t\t\t\t{%d, %d}", this->positions[i].line, this->positions[i].colone);
+			}
+			else
+			{
+				continue;
+			}
 		}
 	}
 }

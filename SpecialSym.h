@@ -6,3 +6,4 @@
 #define newlSym '\n'
 #define quotation '\''
 #define sepSpaNewlSym "+-*/=(){};, \n\t"
+#define EMPTYSTR '\0'
